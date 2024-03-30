@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.util.Collections;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -68,6 +69,18 @@ public class CustomerRestController {
                 connection.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS));
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
+    
+    
+    // @Value("${custom.activeprofile}")
+   // private String profile;
+    
+        @Autowired
+   private Environment env;
+    
+     @GetMapping("/check")
+    public String check() {
+        return "Hello your proerty value is: "+ env.getProperty("custom.activeprofileName");
+    }
 
     @GetMapping()
     public List<Customer> list() {
