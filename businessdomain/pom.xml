@@ -14,7 +14,7 @@
     <packaging>pom</packaging>    
     
     <modules>
-        <module>customer</module>
+        <module>product</module>
     </modules>
     
     
@@ -97,16 +97,10 @@
             <version>${org.mockito.version}</version>
             <scope>test</scope>
         </dependency>   
-     <dependency>
-    <groupId>com.github.javafaker</groupId>
-    <artifactId>javafaker</artifactId>
-    <version>1.0.2</version>
-    <exclusions>
-        <exclusion>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
     </dependencies>     
 </project>
