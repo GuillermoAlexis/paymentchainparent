@@ -48,11 +48,8 @@ public class CustomerRestController {
     @Autowired
     CustomerRepository customerRepository;
 
-    private final WebClient.Builder webClientBuilder;
-
-    public CustomerRestController(WebClient.Builder webClientBuilder) {
-        this.webClientBuilder = webClientBuilder;
-    }
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     //webClient requires HttpClient library to work propertly       
     HttpClient client = HttpClient.create()
@@ -69,17 +66,15 @@ public class CustomerRestController {
                 connection.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS));
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
-    
-    
+
     // @Value("${custom.activeprofile}")
-   // private String profile;
-    
-        @Autowired
-   private Environment env;
-    
-     @GetMapping("/check")
+    // private String profile;
+    @Autowired
+    private Environment env;
+
+    @GetMapping("/check")
     public String check() {
-        return "Hello your proerty value is: "+ env.getProperty("custom.activeprofileName");
+        return "Hello your proerty value is: " + env.getProperty("custom.activeprofileName");
     }
 
     @GetMapping()
@@ -136,7 +131,7 @@ public class CustomerRestController {
             //find all transactions that belong this account number
             List<?> transactions = getTransactions(customer.getIban());
             customer.setTransactions(transactions);
-  
+
         }
         return customer;
     }
@@ -149,11 +144,10 @@ public class CustomerRestController {
      */
     private String getProductName(long id) {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                .baseUrl("http://localhost:8083/product")
+                .baseUrl("http://businessdomain-product")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", "http://localhost:8083/product"))
                 .build();
-        JsonNode block = build.method(HttpMethod.GET).uri("/" + id)
+        JsonNode block = build.method(HttpMethod.GET).uri("/product/" + id)
                 .retrieve().bodyToMono(JsonNode.class).block();
         String name = block.get("name").asText();
         return name;
@@ -168,19 +162,19 @@ public class CustomerRestController {
      */
     private List<?> getTransactions(String iban) {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                .baseUrl("http://localhost:8082/transaction")
+                .baseUrl("http://businessdomain-transactions")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();       
-        
+                .build();
+
         Optional<List<?>> transactionsOptional = Optional.ofNullable(build.method(HttpMethod.GET)
-        .uri(uriBuilder -> uriBuilder
-                .path("/customer/transactions")
+                .uri(uriBuilder -> uriBuilder
+                .path("/transaction/customer/transactions")
                 .queryParam("ibanAccount", iban)
                 .build())
-        .retrieve()
-        .bodyToFlux(Object.class)
-        .collectList()
-        .block());       
+                .retrieve()
+                .bodyToFlux(Object.class)
+                .collectList()
+                .block());
 
         return transactionsOptional.orElse(Collections.emptyList());
     }
