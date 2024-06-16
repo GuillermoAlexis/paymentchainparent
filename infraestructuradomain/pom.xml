@@ -12,6 +12,7 @@
     <artifactId>infraestructuradomain</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>configserver</module>
         <module>eurekaserver</module>
     </modules>
         
